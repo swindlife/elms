@@ -13,6 +13,18 @@ class User(models.Model):
         return self.name
 
 
+class Project(models.Model):
+    name = models.CharField(max_length=20)
+    description = models.TextField(blank=True)
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    created_at = models.DateTimeField()
+    terminated_at = models.DateTimeField(null=True, blank=True)
+    deleted = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.name
+
+
 class IPAddress(models.Model):
     STATUS_CHOICES = (
         ('IN_USE', 'In use'),
@@ -25,23 +37,15 @@ class IPAddress(models.Model):
                               choices=STATUS_CHOICES,
                               default='UNKNOWN')
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    project = models.ForeignKey(Project,
+                                on_delete=models.SET_NULL,
+                                null=True,
+                                blank=True)
     hostname = models.CharField(max_length=50, null=True, blank=True)
     mac_address = models.CharField(max_length=18, null=True, blank=True)
     
     def __str__(self):
         return self.ip_address
-        
-
-class Project(models.Model):
-    name = models.CharField(max_length=20)
-    descrption = models.TextField(blank=True)
-    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    created_at = models.DateTimeField()
-    terminated_at = models.DateTimeField(null=True, blank=True)
-    deleted = models.BooleanField(default=False)
-    
-    def __str__(self):
-        return self.name
     
     
 class Server(models.Model):
