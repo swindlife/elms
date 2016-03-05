@@ -4,3 +4,7 @@ from django.http import HttpResponse
 
 def index(request):
     return HttpResponse("Lab Assets Management.")
+
+
+def import_from_csv(request, module):
+	return HttpResponse("Import Data from CSV file.")
