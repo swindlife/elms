@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.conf.urls import url
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from .forms import ImportCSVForm
 
 # Register your models here.
 
@@ -14,12 +17,26 @@ class IPAddressAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(IPAddressAdmin, self).get_urls()
         my_urls = [
-            url(r'^my_view/$', self.my_view, name="assets_ipaddress_import"),
+            url(r'^import/$', self.import_csv, name="assets_ipaddress_import"),
         ]
         return my_urls + urls
 
-    def my_view(self, request):
-        return HttpResponse("Import Data from CSV file.")
+    def import_csv(self, request):
+        model_title = self.model._meta.verbose_name_plural.title()
+        form = ImportCSVForm(request.POST, request.FILES)
+        print request.FILES
+        data = {
+            'title': 'Import %s from CSV' % model_title,
+            'opts': self.model._meta,
+            'app_label': self.model._meta.app_label,
+            'change': True,
+            'has_file_field': True,
+            'has_add_permission': True,
+            'has_change_permission': True,
+            #'adminform': form
+        }
+        return render_to_response('assets/import_form.html', data,
+                                  context_instance=RequestContext(request))
 
 
 class ServerAdmin(admin.ModelAdmin):
