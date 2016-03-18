@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.conf.urls import url
+from django.http import HttpResponse
 
 # Register your models here.
 
@@ -8,6 +10,16 @@ from .models import IPAddress, Server, Project, User
 class IPAddressAdmin(admin.ModelAdmin):
     list_display = ('ip_address', 'owner', 'project', 'hostname', 'status', )
     search_fields = ['ip_address', 'owner__id', 'project__name', 'status']
+
+    def get_urls(self):
+        urls = super(IPAddressAdmin, self).get_urls()
+        my_urls = [
+            url(r'^my_view/$', self.my_view, name="assets_ipaddress_import"),
+        ]
+        return my_urls + urls
+
+    def my_view(self, request):
+        return HttpResponse("Import Data from CSV file.")
 
 
 class ServerAdmin(admin.ModelAdmin):
